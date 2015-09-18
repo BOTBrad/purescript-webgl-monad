@@ -9,6 +9,7 @@ import Data.Maybe (Maybe (..))
 import qualified Graphics.WebGL.Raw as Raw
 
 import Graphics.WebGL.Types
+import Prelude
 
 attachShader :: WebGLProgram -> WebGLShader -> WebGL Unit
 attachShader prog shader = do
@@ -65,7 +66,7 @@ createShader stype = do
       Just shader -> return shader
       Nothing -> throwError $ NullValue "createShader"
 
-drawArrays :: DrawMode -> Number -> Number -> WebGL Unit
+drawArrays :: DrawMode -> Int -> Int -> WebGL Unit
 drawArrays mode first count = do
     ctx <- ask
     liftEff $ Raw.drawArrays ctx (toWebglEnum mode) first count
@@ -75,7 +76,7 @@ enableVertexAttribArray (Attribute attr) = do
     ctx <- ask
     liftEff $ Raw.enableVertexAttribArray ctx attr
 
-getError :: WebGL Number
+getError :: WebGL Int
 getError = ask >>= Raw.getError >>> liftEff
 
 getProgramParameter :: forall a. WebGLProgram -> ProgramParam -> WebGL a
@@ -184,7 +185,8 @@ vertexAttrib4fv (Attribute a) xs = do
     ctx <- ask
     liftEff $ Raw.vertexAttrib4fv_ ctx a xs
 
-vertexAttribPointer :: forall a. Attribute a -> Number -> DataType -> Boolean -> Number -> Number -> WebGL Unit
+vertexAttribPointer :: forall a. Attribute a -> Int -> DataType -> Boolean -> Int -> Int -> WebGL Unit
 vertexAttribPointer (Attribute attr) size dtype isNormalized stride offset = do
     ctx <- ask
     liftEff $ Raw.vertexAttribPointer ctx attr size (toWebglEnum dtype) isNormalized stride offset
+    -- liftEff $ Raw.vertexAttribPointer ctx attr size (toWebglEnum dtype) isNormalized stride offset

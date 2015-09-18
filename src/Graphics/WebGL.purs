@@ -15,6 +15,7 @@ import qualified Graphics.WebGL.Raw.Types as Raw
 import Graphics.WebGL.Methods
 import Graphics.WebGL.Shader
 import Graphics.WebGL.Types
+import Prelude
 
 runWebgl :: forall eff a. WebGL a -> Raw.WebGLContext -> Eff (canvas :: Canvas | eff) (Either WebGLError a)
 runWebgl f ctx = runErrorT $ runReaderT f ctx

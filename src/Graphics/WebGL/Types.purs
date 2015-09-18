@@ -9,6 +9,8 @@ import Graphics.Canvas (Canvas ())
 import qualified Graphics.WebGL.Raw.Enums as Enum
 import qualified Graphics.WebGL.Raw.Types as Raw
 
+import Prelude
+
 type WebGLT eff a = ReaderT Raw.WebGLContext (ErrorT WebGLError eff) a
 type WebGL a = forall eff. WebGLT (Eff (canvas :: Canvas | eff)) a
 
@@ -56,16 +58,16 @@ data Mat4 = Mat4    Number Number Number Number
 
 -- attributes and uniforms
 
-newtype Attribute a = Attribute Number
+newtype Attribute a = Attribute Int
 newtype Uniform a   = Uniform WebGLUniformLocation
 
 -- wrapped GLenums
 
 class ToWebGLEnum a where
-  toWebglEnum :: a -> Number
+  toWebglEnum :: a -> Int
 
 class FromWebGLEnum a where
-  fromWebglEnum :: Number -> a
+  fromWebglEnum :: Int -> a
 
 data ArrayBufferType
   = ArrayBuffer
@@ -182,5 +184,5 @@ instance toWebglEnumShader :: ToWebGLEnum ShaderType where
 -- params for polymorphic raw functions
 
 data BufferData
-  = DataSize Number
+  = DataSize Int
   | DataSource Float32Array

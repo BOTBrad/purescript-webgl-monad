@@ -5,7 +5,7 @@ module Graphics.WebGL.Shader
 , getUniformBindings
 ) where
 
-import Control.Monad (when, foldM)
+import Control.Monad (when)
 import Control.Monad.Eff (Eff ())
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Error.Class (throwError)
@@ -19,6 +19,7 @@ import qualified Graphics.WebGL.Methods as GL
 import qualified Graphics.WebGL.Raw.Types as Raw
 
 import Graphics.WebGL.Types
+import Prelude
 
 class SetVertAttr a where
   setVertAttr :: Attribute a -> a -> WebGL Unit
@@ -95,54 +96,12 @@ getUniformBindings prog = do
 
 -- foreigns
 
-foreign import getAttrBindingsImpl """
-  function getAttrBindingsImpl(ctx, prog, wrapper) {
-    return function () {
-      var all, attr, count, loc;
-
-      try {
-        all = {};
-        count = ctx.getProgramParameter(prog, ctx.ACTIVE_ATTRIBUTES);
-
-        for (var i = 0; i < count; i++) {
-          attr = ctx.getActiveAttrib(prog, i);
-          loc = ctx.getAttribLocation(prog, attr.name);
-          all[attr.name] = wrapper(loc);
-        }
-
-        return all;
-      } catch(e) {
-        return null;
-      }
-    };
-  }
-""" :: forall eff bindings a. Fn3 WebGLContext WebGLProgram (Number -> Attribute a) (Eff (canvas :: Canvas | eff) (Object bindings))
+foreign import getAttrBindingsImpl :: forall eff bindings a. Fn3 WebGLContext WebGLProgram (Int -> Attribute a) (Eff (canvas :: Canvas | eff) (Object bindings))
 
 getAttrBindings_ :: forall eff bindings a. WebGLContext -> WebGLProgram -> Eff (canvas :: Canvas | eff) (Maybe (Object bindings))
 getAttrBindings_ ctx prog = runFn3 getAttrBindingsImpl ctx prog Attribute >>= toMaybe >>> return
 
-foreign import getUniformBindingsImpl """
-  function getUniformBindingsImpl(ctx, prog, wrapper) {
-    return function () {
-      var all, unif, count, loc;
-
-      try {
-        all = {};
-        count = ctx.getProgramParameter(prog, ctx.ACTIVE_UNIFORMS);
-
-        for (var i = 0; i < count; i++) {
-          unif = ctx.getActiveUniform(prog, i);
-          loc = ctx.getUniformLocation(prog, unif.name);
-          all[unif.name] = wrapper(loc);
-        }
-
-        return all;
-      } catch(e) {
-        return null;
-      }
-    };
-  }
-""" :: forall eff bindings a. Fn3 WebGLContext WebGLProgram (WebGLUniformLocation -> Uniform a) (Eff (canvas :: Canvas | eff) (Object bindings))
+foreign import getUniformBindingsImpl :: forall eff bindings a. Fn3 WebGLContext WebGLProgram (WebGLUniformLocation -> Uniform a) (Eff (canvas :: Canvas | eff) (Object bindings))
 
 getUniformBindings_ :: forall eff bindings a. WebGLContext -> WebGLProgram -> Eff (canvas :: Canvas | eff) (Maybe (Object bindings))
 getUniformBindings_ ctx prog = runFn3 getUniformBindingsImpl ctx prog Uniform >>= toMaybe >>> return

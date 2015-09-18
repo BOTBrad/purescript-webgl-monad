@@ -16,6 +16,7 @@ import Graphics.Canvas (Canvas (), CanvasElement ())
 import Graphics.WebGL.Unsafe (unsafeCoerce)
 
 import Graphics.WebGL.Types
+import Prelude
 
 defaultWebglContextAttrs :: WebGLContextAttributes
 defaultWebglContextAttrs =
@@ -59,16 +60,4 @@ contextProperties = ask >>= (unsafeCoerce :: WebGLContext -> ContextProperties) 
 
 -- foreigns
 
-foreign import getWebglContextWithAttrsImpl """
-  function getWebglContextWithAttrsImpl(canvas, attrs, Just, Nothing) {
-    return function () {
-      try {
-        return Just(
-          canvas.getContext('webgl', attrs) || canvas.getContext('experimental-webgl', attrs)
-        );
-      } catch(err) {
-        return Nothing;
-      };
-    }
-  }
-""" :: forall eff maybe. Fn4 CanvasElement WebGLContextAttributes (WebGLContext -> maybe) maybe (Eff (canvas :: Canvas | eff) (Maybe WebGLContext))
+foreign import getWebglContextWithAttrsImpl :: forall eff maybe. Fn4 CanvasElement WebGLContextAttributes (WebGLContext -> maybe) maybe (Eff (canvas :: Canvas | eff) (Maybe WebGLContext))
