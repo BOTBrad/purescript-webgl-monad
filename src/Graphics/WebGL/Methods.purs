@@ -140,6 +140,21 @@ uniform4fv (Uniform attr) xs = do
     ctx <- ask
     liftEff $ Raw.uniform4fv_ ctx attr xs
 
+uniformMatrix2fv :: forall u. Uniform u -> Float32Array -> WebGL Unit
+uniformMatrix2fv (Uniform attr) xs = do
+    ctx <- ask
+    liftEff $ Raw.uniformMatrix2fv_ ctx attr false xs
+
+uniformMatrix3fv :: forall u. Uniform u -> Float32Array -> WebGL Unit
+uniformMatrix3fv (Uniform attr) xs = do
+    ctx <- ask
+    liftEff $ Raw.uniformMatrix3fv_ ctx attr false xs
+
+uniformMatrix4fv :: forall u. Uniform u -> Float32Array -> WebGL Unit
+uniformMatrix4fv (Uniform attr) xs = do
+    ctx <- ask
+    liftEff $ Raw.uniformMatrix4fv_ ctx attr false xs
+
 useProgram :: WebGLProgram -> WebGL Unit
 useProgram prog = do
     ctx <- ask
